@@ -1,4 +1,4 @@
-name: "Deployment Manager"
+name: "Deployment Actions"
 description: "Creates GitHub deployment and automatically updates status on completion"
 author: "JD Boivin"
 branding:

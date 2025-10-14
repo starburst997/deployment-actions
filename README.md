@@ -1,4 +1,4 @@
-# Deployment Manager Action
+# Deployment Manager Actions
 
 A GitHub composite action that streamlines deployment management by automatically creating deployments and updating their status based on workflow outcomes.
 
