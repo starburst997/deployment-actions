@@ -33,14 +33,17 @@ runs:
     - name: Download release assets
       shell: bash
       run: |
-        # Smart version resolution
+        # Smart version resolution using gh CLI
         REF="${{ github.action_ref }}"
 
         # If it's a major version like "v1", find the latest v1.x.x
         if [[ "$REF" =~ ^v[0-9]+$ ]]; then
           echo "Resolving major version $REF to latest patch version..."
-          RESOLVED_TAG=$(curl -s "https://api.github.com/repos/starburst997/deployment-actions/releases" | \
-            jq -r --arg ref "$REF" '[.[] | select(.tag_name | startswith($ref + ".")) | .tag_name] | sort | last')
+
+          RESOLVED_TAG=$(gh release list --repo starburst997/deployment-actions --json tagName --jq ".[].tagName" | \
+            grep "^$REF\." | \
+            sort -V | \
+            tail -n1)
 
           if [ -z "$RESOLVED_TAG" ]; then
             echo "No releases found for major version $REF, using latest"
@@ -52,25 +55,19 @@ runs:
           RESOLVED_TAG="$REF"
         fi
 
-        # Download the release
+        # Download the release using gh CLI
         mkdir -p "${{ runner.temp }}/release"
         cd "${{ runner.temp }}/release"
 
         if [ "$RESOLVED_TAG" = "latest" ]; then
-          DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/starburst997/deployment-actions/releases/latest" | \
-            jq -r '.assets[] | select(.name == "release.zip") | .browser_download_url')
+          echo "Downloading latest release..."
+          gh release download --repo starburst997/deployment-actions --pattern "release.zip"
         else
-          DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/starburst997/deployment-actions/releases/tags/$RESOLVED_TAG" | \
-            jq -r '.assets[] | select(.name == "release.zip") | .browser_download_url')
+          echo "Downloading release $RESOLVED_TAG..."
+          gh release download "$RESOLVED_TAG" --repo starburst997/deployment-actions --pattern "release.zip"
         fi
 
-        if [ -z "$DOWNLOAD_URL" ]; then
-          echo "Error: Could not find release.zip for $RESOLVED_TAG"
-          exit 1
-        fi
-
-        echo "Downloading: $DOWNLOAD_URL"
-        curl -L -o release.zip "$DOWNLOAD_URL"
+        # Extract the downloaded archive
         unzip -q release.zip
       env:
         GITHUB_TOKEN: ${{ github.token }}
