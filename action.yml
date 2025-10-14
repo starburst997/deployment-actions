@@ -1,0 +1,32 @@
+name: "Deployment Manager"
+description: "Creates GitHub deployment and automatically updates status on completion"
+author: "JD Boivin"
+branding:
+  icon: "upload-cloud"
+  color: "blue"
+
+inputs:
+  token:
+    description: "GitHub token with deployment permissions"
+    required: false
+    default: ${{ github.token }}
+  ref:
+    description: "Git reference for the deployment"
+    required: false
+    default: ${{ github.head_ref }}
+  environment:
+    description: "Deployment environment name"
+    required: false
+    default: production
+  environment-url:
+    description: "URL where the deployment will be accessible"
+    required: false
+
+outputs:
+  deployment-id:
+    description: "The ID of the created deployment"
+
+runs:
+  using: "node20"
+  main: "index.js"
+  post: "post.js"
