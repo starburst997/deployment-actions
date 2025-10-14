@@ -16,8 +16,8 @@ COPY tsconfig.json ./
 RUN npm run all
 
 # Copy entrypoint scripts
-COPY entrypoint.sh /entrypoint.sh
-COPY post-entrypoint.sh /post-entrypoint.sh
+COPY scripts/entrypoint.sh /entrypoint.sh
+COPY scripts/post-entrypoint.sh /post-entrypoint.sh
 RUN chmod +x /entrypoint.sh /post-entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
