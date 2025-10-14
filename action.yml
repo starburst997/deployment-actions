@@ -40,8 +40,7 @@ runs:
         if [[ "$REF" =~ ^v[0-9]+$ ]]; then
           echo "Resolving major version $REF to latest patch version..."
           RESOLVED_TAG=$(curl -s "https://api.github.com/repos/starburst997/deployment-actions/releases" | \
-            jq -r --arg ref "$REF" '.[] | select(.tag_name | startswith($ref + ".")) | .tag_name' | \
-            sort -V | tail -n1)
+            jq -r --arg ref "$REF" '[.[] | select(.tag_name | startswith($ref + ".")) | .tag_name] | sort | last')
 
           if [ -z "$RESOLVED_TAG" ]; then
             echo "No releases found for major version $REF, using latest"
