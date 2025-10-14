@@ -31,14 +31,50 @@ runs:
   using: "composite"
   steps:
     - name: Download release assets
-      uses: starburst997/release-downloader@v1
-      with:
-        repository: "starburst997/deployment-actions"
-        tag: ${{ github.action_ref }}
-        fileName: "release.zip"
-        out-file-path: "${{ runner.temp }}/release"
-        extract: true
-        token: ${{ github.token }}
+      shell: bash
+      run: |
+        # Smart version resolution
+        REF="${{ github.action_ref }}"
+
+        # If it's a major version like "v1", find the latest v1.x.x
+        if [[ "$REF" =~ ^v[0-9]+$ ]]; then
+          echo "Resolving major version $REF to latest patch version..."
+          RESOLVED_TAG=$(curl -s "https://api.github.com/repos/starburst997/deployment-actions/releases" | \
+            jq -r --arg ref "$REF" '.[] | select(.tag_name | startswith($ref + ".")) | .tag_name' | \
+            sort -V | tail -n1)
+
+          if [ -z "$RESOLVED_TAG" ]; then
+            echo "No releases found for major version $REF, using latest"
+            RESOLVED_TAG="latest"
+          else
+            echo "Resolved $REF to $RESOLVED_TAG"
+          fi
+        else
+          RESOLVED_TAG="$REF"
+        fi
+
+        # Download the release
+        mkdir -p "${{ runner.temp }}/release"
+        cd "${{ runner.temp }}/release"
+
+        if [ "$RESOLVED_TAG" = "latest" ]; then
+          DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/starburst997/deployment-actions/releases/latest" | \
+            jq -r '.assets[] | select(.name == "release.zip") | .browser_download_url')
+        else
+          DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/starburst997/deployment-actions/releases/tags/$RESOLVED_TAG" | \
+            jq -r '.assets[] | select(.name == "release.zip") | .browser_download_url')
+        fi
+
+        if [ -z "$DOWNLOAD_URL" ]; then
+          echo "Error: Could not find release.zip for $RESOLVED_TAG"
+          exit 1
+        fi
+
+        echo "Downloading: $DOWNLOAD_URL"
+        curl -L -o release.zip "$DOWNLOAD_URL"
+        unzip -q release.zip
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
