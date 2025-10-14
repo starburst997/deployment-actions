@@ -67,3 +67,4 @@ runs:
       env:
         INPUT_TOKEN: ${{ inputs.token }}
         GITHUB_TOKEN: ${{ inputs.token }}
+        GITHUB_JOB_STATUS: ${{ job.status }}
