@@ -21,10 +21,6 @@ inputs:
   environment-url:
     description: "URL where the deployment will be accessible"
     required: false
-  action-version:
-    description: "Action version (automatically set)"
-    required: false
-    default: ${{ github.action_ref }}
 
 outputs:
   deployment-id:
@@ -32,7 +28,9 @@ outputs:
 
 runs:
   using: "docker"
-  image: "docker://ghcr.io/starburst997/deployment-actions:${{ inputs.action-version }}"
+  image: "docker://ghcr.io/starburst997/deployment-actions:v1"
+  # For some bizarre reason, we cannot easily specify the version of the action in the image.
+  #image: "docker://ghcr.io/starburst997/deployment-actions:${{ inputs.action-version }}"
   post-entrypoint: "/post-entrypoint.sh"
   post-if: "always()"
   env:
