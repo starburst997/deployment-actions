@@ -28,7 +28,7 @@ outputs:
 
 runs:
   using: "docker"
-  image: "docker://ghcr.io/${{ github.repository }}:latest"
+  image: "docker://ghcr.io/${{ github.repository }}:${{ github.action_ref }}"
   post-entrypoint: "/post-entrypoint.sh"
   post-if: "always()"
   env:

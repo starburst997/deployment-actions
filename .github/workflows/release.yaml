@@ -25,7 +25,7 @@ jobs:
       - name: Build and Push Docker
         uses: starburst997/docker-helm-push@v1
         with:
-          version: ${{ steps.version.outputs.version }}
+          version: v${{ steps.version.outputs.version }}
 
       - name: Generate changelog and create release
         uses: starburst997/commits-logs@v1
