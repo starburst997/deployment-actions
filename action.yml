@@ -21,6 +21,10 @@ inputs:
   environment-url:
     description: "URL where the deployment will be accessible"
     required: false
+  action-version:
+    description: "Action version (automatically set)"
+    required: false
+    default: ${{ github.action_ref }}
 
 outputs:
   deployment-id:
@@ -28,9 +32,9 @@ outputs:
 
 runs:
   using: "docker"
-  image: "docker://ghcr.io/${{ github.repository }}:${{ github.action_ref }}"
+  image: "docker://ghcr.io/starburst997/deployment-actions:${{ inputs.action-version }}"
   post-entrypoint: "/post-entrypoint.sh"
   post-if: "always()"
   env:
-    GITHUB_TOKEN: ${{ github.token }}
-    GITHUB_HEAD_REF: ${{ github.head_ref }}
+    GITHUB_TOKEN: ${{ inputs.token }}
+    GITHUB_HEAD_REF: ${{ inputs.ref }}
