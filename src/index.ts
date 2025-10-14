@@ -10,9 +10,9 @@ interface ActionInputs {
 
 async function getInputs(): Promise<ActionInputs> {
   return {
-    token: core.getInput("token", { required: true }),
-    ref: core.getInput("ref", { required: true }),
-    environment: core.getInput("environment", { required: true }),
+    token: core.getInput("token"),
+    ref: core.getInput("ref"),
+    environment: core.getInput("environment"),
     environmentUrl: core.getInput("environment-url"),
   }
 }
