@@ -37,7 +37,7 @@ jobs:
       - name: Package for release
         run: |
           mkdir -p release
-          zip -r release/deployment-actions.zip action.yml dist/ dist-post/
+          zip -r release/release.zip action.yml dist/ dist-post/
 
       - name: Generate changelog and create release
         uses: starburst997/commits-logs@v1

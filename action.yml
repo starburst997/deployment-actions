@@ -35,7 +35,7 @@ runs:
       with:
         repository: "starburst997/deployment-actions"
         tag: ${{ github.action_ref }}
-        fileName: "deployment-actions.zip"
+        fileName: "release.zip"
         out-file-path: "${{ runner.temp }}/release"
         extract: true
         token: ${{ github.token }}
