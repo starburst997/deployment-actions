@@ -2,10 +2,12 @@
   "name": "deployment-actions",
   "version": "1.0.0",
   "description": "GitHub Action for managing deployments",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "ncc build index.js -o dist",
-    "build-post": "ncc build post.js -o dist-post"
+    "build": "tsc && ncc build lib/index.js -o dist && ncc build lib/post.js -o dist",
+    "compile": "tsc",
+    "package": "ncc build lib/index.js -o dist && ncc build lib/post.js -o dist-post",
+    "all": "npm run compile && npm run package"
   },
   "keywords": ["github", "actions", "deployment"],
   "author": "JD Boivin",
@@ -15,6 +17,8 @@
     "@actions/github": "^6.0.0"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.38.1"
+    "@types/node": "^20.11.0",
+    "@vercel/ncc": "^0.38.1",
+    "typescript": "^5.3.3"
   }
 }
