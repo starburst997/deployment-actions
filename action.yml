@@ -25,8 +25,81 @@ inputs:
 outputs:
   deployment-id:
     description: "The ID of the created deployment"
+    value: ${{ steps.main-action.outputs.deployment-id }}
 
 runs:
-  using: "node20"
-  main: "dist/index.js"
-  post: "dist-post/index.js"
+  using: "composite"
+  steps:
+    - name: Setup runtime
+      shell: bash
+      run: |
+        # Extract version from action path
+        ACTION_PATH="${{ github.action_path }}"
+        ACTION_REF="${{ github.action_ref }}"
+
+        # Determine the version tag being used
+        if [[ "${{ github.action_repository }}" == "starburst997/deployment-actions" ]]; then
+          # External usage - get the ref that was used
+          VERSION="${ACTION_REF}"
+        else
+          # Local testing - use latest
+          VERSION="latest"
+        fi
+
+        echo "ACTION_VERSION=$VERSION" >> $GITHUB_ENV
+        echo "Using deployment-actions version: $VERSION"
+
+        # Create working directory
+        mkdir -p ${{ runner.temp }}/deployment-actions
+        cd ${{ runner.temp }}/deployment-actions
+
+        # Download the specific version's release
+        if [ "$VERSION" = "latest" ]; then
+          RELEASE_URL=$(curl -s https://api.github.com/repos/starburst997/deployment-actions/releases/latest | grep "browser_download_url.*deployment-actions.zip" | cut -d '"' -f 4)
+        else
+          RELEASE_URL=$(curl -s https://api.github.com/repos/starburst997/deployment-actions/releases/tags/${VERSION} | grep "browser_download_url.*deployment-actions.zip" | cut -d '"' -f 4)
+        fi
+
+        if [ -z "$RELEASE_URL" ]; then
+          echo "Error: Could not find release asset for version $VERSION"
+          exit 1
+        fi
+
+        echo "Downloading from: $RELEASE_URL"
+        curl -L -o deployment-actions.zip "$RELEASE_URL"
+        unzip -q deployment-actions.zip
+
+        # Save path for post action
+        echo "DEPLOYMENT_ACTION_PATH=${{ runner.temp }}/deployment-actions" >> $GITHUB_ENV
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+
+    - name: Run main action
+      id: main-action
+      shell: bash
+      run: |
+        cd "$DEPLOYMENT_ACTION_PATH"
+        node dist/index.js
+      env:
+        INPUT_TOKEN: ${{ inputs.token }}
+        INPUT_REF: ${{ inputs.ref }}
+        INPUT_ENVIRONMENT: ${{ inputs.environment }}
+        INPUT_ENVIRONMENT_URL: ${{ inputs.environment-url }}
+        GITHUB_TOKEN: ${{ inputs.token }}
+
+    - name: Run post action
+      if: always()
+      shell: bash
+      run: |
+        if [ -z "$DEPLOYMENT_ACTION_PATH" ]; then
+          echo "Error: Deployment action path not set"
+          exit 1
+        fi
+        cd "$DEPLOYMENT_ACTION_PATH"
+        node dist-post/index.js
+      env:
+        INPUT_TOKEN: ${{ inputs.token }}
+        GITHUB_TOKEN: ${{ inputs.token }}
