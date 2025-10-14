@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deployment Manager - GitHub Action</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+
+      .hero-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index: -1;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      header {
+        padding: 2rem 0;
+        text-align: center;
+        color: white;
+      }
+
+      .hero {
+        padding: 4rem 0 6rem;
+        text-align: center;
+        color: white;
+      }
+
+      h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(to right, #fff, rgba(255, 255, 255, 0.9));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .tagline {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        opacity: 0.95;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2.5rem;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 0.875rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+      }
+
+      .btn-primary {
+        background: white;
+        color: #667eea;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+      }
+
+      .btn-secondary:hover {
+        background: white;
+        color: #667eea;
+      }
+
+      .features-section {
+        background: white;
+        border-radius: 20px 20px 0 0;
+        padding: 5rem 0;
+        margin-top: -2rem;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2.5rem;
+        margin-top: 3rem;
+      }
+
+      .feature {
+        text-align: center;
+        padding: 1.5rem;
+      }
+
+      .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 1.5rem;
+        color: white;
+      }
+
+      .feature h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+        color: #333;
+      }
+
+      .feature p {
+        color: #666;
+        line-height: 1.7;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 1rem;
+      }
+
+      .section-subtitle {
+        text-align: center;
+        color: #666;
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .usage-section {
+        padding: 5rem 0;
+        background: white;
+      }
+
+      .code-block {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 1.5rem;
+        border-radius: 10px;
+        overflow-x: auto;
+        margin-top: 2rem;
+        font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        white-space: pre;
+      }
+
+      .code-block .comment {
+        color: #6a9955;
+      }
+
+      .code-block .keyword {
+        color: #c586c0;
+      }
+
+      .code-block .key {
+        color: #9cdcfe;
+      }
+
+      .code-block .value {
+        color: #ce9178;
+      }
+
+      .docs-section {
+        padding: 5rem 0;
+        background: #f8f9fa;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 2rem;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      th {
+        background: #667eea;
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+      }
+
+      td {
+        padding: 1rem;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      tr:hover {
+        background: #f8f9fa;
+      }
+
+      code {
+        background: #f8f9fa;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+        font-size: 0.9em;
+        color: #667eea;
+      }
+
+      footer {
+        background: #f8f9fa;
+        padding: 3rem 0;
+        text-align: center;
+        color: #666;
+      }
+
+      footer a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2.5rem;
+        }
+
+        .tagline {
+          font-size: 1.2rem;
+        }
+
+        .features {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        table {
+          font-size: 0.9rem;
+        }
+
+        th,
+        td {
+          padding: 0.75rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hero-background"></div>
+
+    <header>
+      <div class="container">
+        <nav>
+          <a
+            href="https://github.com/starburst997/deployment-actions"
+            class="btn btn-secondary"
+          >
+            View on GitHub →
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="container">
+        <h1>Deployment Manager</h1>
+        <p class="tagline">
+          A single GitHub action to create and automatically update deployment status based on workflow outcomes
+        </p>
+      </div>
+    </section>
+
+    <section class="features-section">
+      <div class="container">
+        <h2 class="section-title">Key Features</h2>
+        <p class="section-subtitle">
+          Streamline deployment tracking with intelligent status management
+        </p>
+
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">🚀</div>
+            <h3>Automatic Status Updates</h3>
+            <p>
+              Creates deployments with in_progress status and automatically updates to success or failure based on workflow results
+            </p>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">📊</div>
+            <h3>Simple Integration</h3>
+            <p>
+              Single action call handles the entire deployment lifecycle - no need to manage status updates manually
+            </p>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">🔗</div>
+            <h3>Environment URLs</h3>
+            <p>
+              Support for custom environment URLs to link directly to your deployed applications
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="usage-section">
+      <div class="container">
+        <h2 class="section-title">Quick Start</h2>
+        <p class="section-subtitle">Get started in minutes</p>
+
+        <h3 style="margin-top: 3rem; font-size: 1.8rem; color: #333">
+          Basic Usage
+        </h3>
+        <div class="code-block">- <span class="key">name</span>: <span class="value">Manage Deployment</span>
+  <span class="key">uses</span>: <span class="value">starburst997/deployment-actions@v1</span>
+  <span class="keyword">with</span>:
+    <span class="key">environment</span>: <span class="value">production</span>
+    <span class="key">environment-url</span>: <span class="value">https://your-app.example.com</span></div>
+
+        <h3 style="margin-top: 3rem; font-size: 1.8rem; color: #333">
+          Complete Workflow Example
+        </h3>
+        <div class="code-block"><span class="key">name</span>: <span class="value">Deploy to Production</span>
+
+<span class="key">on</span>:
+  <span class="key">push</span>:
+    <span class="key">branches</span>: [<span class="value">main</span>]
+
+<span class="key">jobs</span>:
+  <span class="key">deploy</span>:
+    <span class="key">runs-on</span>: <span class="value">ubuntu-latest</span>
+    <span class="key">permissions</span>: <span class="value">write-all</span>
+    <span class="key">steps</span>:
+      - <span class="key">uses</span>: <span class="value">actions/checkout@v4</span>
+
+      - <span class="key">name</span>: <span class="value">Manage Deployment</span>
+        <span class="key">uses</span>: <span class="value">starburst997/deployment-actions@v1</span>
+        <span class="keyword">with</span>:
+          <span class="key">environment</span>: <span class="value">production</span>
+          <span class="key">environment-url</span>: <span class="value">https://your-app.example.com</span>
+
+      - <span class="key">name</span>: <span class="value">Build and Deploy</span>
+        <span class="key">run</span>: |
+          <span class="comment"># Your deployment steps here</span>
+          <span class="value">npm run build</span>
+          <span class="value">npm run deploy</span></div>
+      </div>
+    </section>
+
+    <section class="docs-section">
+      <div class="container">
+        <h2 class="section-title">Documentation</h2>
+        <p class="section-subtitle">Complete reference for all inputs and outputs</p>
+
+        <h3 style="margin-top: 3rem; font-size: 1.8rem; color: #333">
+          Inputs
+        </h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Input</th>
+              <th>Description</th>
+              <th>Required</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>token</code></td>
+              <td>GitHub token with deployment permissions</td>
+              <td>No</td>
+              <td><code>${{ github.token }}</code></td>
+            </tr>
+            <tr>
+              <td><code>ref</code></td>
+              <td>Git reference for the deployment</td>
+              <td>No</td>
+              <td><code>${{ github.sha }}</code></td>
+            </tr>
+            <tr>
+              <td><code>environment</code></td>
+              <td>Deployment environment name (e.g., production, staging)</td>
+              <td>No</td>
+              <td><code>production</code></td>
+            </tr>
+            <tr>
+              <td><code>environment-url</code></td>
+              <td>URL where the deployment will be accessible</td>
+              <td>No</td>
+              <td><em>(none)</em></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 style="margin-top: 3rem; font-size: 1.8rem; color: #333">
+          Outputs
+        </h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Output</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>deployment-id</code></td>
+              <td>The ID of the created deployment</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 style="margin-top: 3rem; font-size: 1.8rem; color: #333">
+          How It Works
+        </h3>
+        <div style="margin-top: 2rem; padding: 1.5rem; background: white; border-radius: 10px; border-left: 4px solid #667eea;">
+          <ol style="padding-left: 1.5rem;">
+            <li style="margin-bottom: 1rem;">Creates a GitHub deployment with <code>in_progress</code> status</li>
+            <li style="margin-bottom: 1rem;">Your workflow steps execute normally</li>
+            <li>Post-action cleanup automatically updates the deployment status:
+              <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                <li><code>success</code> if all steps completed successfully</li>
+                <li><code>failure</code> if any step failed</li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <p>
+          <a href="https://github.com/starburst997/deployment-actions">GitHub</a> •
+          <a href="https://github.com/starburst997/deployment-actions/issues">Issues</a> •
+          <a href="https://github.com/marketplace/actions/deployment-manager">Marketplace</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
