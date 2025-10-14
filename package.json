@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc && ncc build lib/index.js -o dist && ncc build lib/post.js -o dist",
     "compile": "tsc",
-    "package": "ncc build lib/index.js -o dist && ncc build lib/post.js -o dist-post",
+    "package": "ncc build lib/index.js -o dist --minify --no-source-map-register && ncc build lib/post.js -o dist-post --minify --no-source-map-register",
     "all": "npm run compile && npm run package"
   },
   "keywords": ["github", "actions", "deployment"],
