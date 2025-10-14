@@ -32,12 +32,9 @@ outputs:
 
 runs:
   using: "docker"
-  image: "Dockerfile.boot"
+  image: "docker://ghcr.io/starburst997/deployment-actions:v1" # Cannot specify dynamic version, this is really stupid
   post-entrypoint: "/post-entrypoint.sh"
   post-if: "always()"
-  args:
-    - "--build-arg"
-    - "ACTION_REF=${{ inputs.action-version }}"
   env:
     GITHUB_TOKEN: ${{ inputs.token }}
     GITHUB_HEAD_REF: ${{ inputs.ref }}
