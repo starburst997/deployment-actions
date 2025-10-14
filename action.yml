@@ -31,19 +31,14 @@ runs:
   using: "composite"
   steps:
     - name: Download release assets
-      uses: robinraju/release-downloader@v1
+      uses: starburst997/release-downloader@v1
       with:
         repository: "starburst997/deployment-actions"
         tag: ${{ github.action_ref }}
         fileName: "deployment-actions.zip"
-        out-file-path: "${{ runner.temp }}/deployment-actions"
+        out-file-path: "${{ runner.temp }}/release"
         extract: true
         token: ${{ github.token }}
-
-    - name: Setup environment
-      shell: bash
-      run: |
-        echo "DEPLOYMENT_ACTION_PATH=${{ runner.temp }}/deployment-actions" >> $GITHUB_ENV
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -54,7 +49,7 @@ runs:
       id: main-action
       shell: bash
       run: |
-        cd "$DEPLOYMENT_ACTION_PATH"
+        cd "${{ runner.temp }}/release"
         node dist/index.js
       env:
         INPUT_TOKEN: ${{ inputs.token }}
@@ -67,11 +62,7 @@ runs:
       if: always()
       shell: bash
       run: |
-        if [ -z "$DEPLOYMENT_ACTION_PATH" ]; then
-          echo "Error: Deployment action path not set"
-          exit 1
-        fi
-        cd "$DEPLOYMENT_ACTION_PATH"
+        cd "${{ runner.temp }}/release"
         node dist-post/index.js
       env:
         INPUT_TOKEN: ${{ inputs.token }}
