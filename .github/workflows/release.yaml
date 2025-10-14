@@ -21,32 +21,17 @@ jobs:
         uses: starburst997/auto-version@v1
         with:
           update-major-minor: true
+          edit-file: "action.yml"
+          edit-commit-message: "chore: update docker image to {version}"
+          git-push: false
 
       - name: Build and Push Docker
         uses: starburst997/docker-helm-push@v1
         with:
           version: ${{ steps.version.outputs.tag }}
 
-      - name: Update action.yml with new version
-        run: |
-          # Update the docker image version in action.yml using repository name
-          REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          sed -i "s|${REPO_NAME}:[^\"]*|${REPO_NAME}:${{ steps.version.outputs.tag }}|g" action.yml
-
-          # Check if file was actually changed
-          if git diff --quiet action.yml; then
-            echo "No changes to action.yml"
-            exit 0
-          fi
-
-          # Configure git for github-actions[bot]
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          # Commit the change
-          git add action.yml
-          git commit -m "chore: update docker image to ${{ steps.version.outputs.tag }}"
-          git push
-
       - name: Generate changelog and create release
         uses: starburst997/commits-logs@v1
+        with:
+          exclude-commits: "chore: update docker image to"
+          git-push: true
