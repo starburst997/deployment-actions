@@ -57,73 +57,21 @@ function determineDeploymentState(jobStatus: string): {
   }
 }
 
-async function getJobStatus(
-  octokit: ReturnType<typeof github.getOctokit>,
-  owner: string,
-  repo: string
-): Promise<JobStatus> {
-  try {
-    const { data: jobs } = await octokit.rest.actions.listJobsForWorkflowRun({
-      owner,
-      repo,
-      run_id: github.context.runId,
-    })
+function getJobStatus(): JobStatus {
+  const jobStatus = core.getInput("__job_status")
 
-    // Find the main job (not the post-cleanup job)
-    // The main job is the one that's completed and not a post-cleanup
-    const mainJob = jobs.jobs.find(
-      (job) => job.name === github.context.job && job.conclusion !== null
-    )
+  core.info(`Job status from input: ${jobStatus}`)
 
-    if (!mainJob) {
-      core.warning(
-        "Could not find completed main job, checking workflow run status"
-      )
-
-      // Fallback: check the overall workflow run conclusion
-      const { data: workflowRun } = await octokit.rest.actions.getWorkflowRun({
-        owner,
-        repo,
-        run_id: github.context.runId,
-      })
-
-      core.warning("Workflow conclusion: " + workflowRun.conclusion)
-
-      switch (workflowRun.conclusion) {
-        case "success":
-          return "success"
-        case "failure":
-        case "timed_out":
-          return "failure"
-        case "cancelled":
-          return "cancelled"
-        default:
-          return "failure"
-      }
-    }
-
-    // Map GitHub job conclusion to our JobStatus
-    switch (mainJob.conclusion) {
-      case "success":
-        return "success"
-      case "failure":
-      case "timed_out":
-        return "failure"
-      case "cancelled":
-        return "cancelled"
-      default:
-        core.warning(
-          `Unknown job conclusion: ${mainJob.conclusion}, assuming failure`
-        )
-        return "failure"
-    }
-  } catch (error) {
-    core.warning(
-      `Failed to get job status: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`
-    )
-    return "failure"
+  switch (jobStatus) {
+    case "success":
+      return "success"
+    case "failure":
+      return "failure"
+    case "cancelled":
+      return "cancelled"
+    default:
+      core.warning(`Unknown job status: ${jobStatus}, assuming failure`)
+      return "failure"
   }
 }
 
@@ -140,8 +88,8 @@ async function run(): Promise<void> {
     const octokit = github.getOctokit(savedState.token)
     const { owner, repo } = github.context.repo
 
-    // Determine the final state based on actual job status from API
-    const jobStatus = await getJobStatus(octokit, owner, repo)
+    // Determine the final state based on job status from input
+    const jobStatus = getJobStatus()
     const { state, description } = determineDeploymentState(jobStatus)
 
     core.info(

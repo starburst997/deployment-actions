@@ -25,6 +25,10 @@ inputs:
     description: "Action version (automatically set)"
     required: false
     default: ${{ github.action_ref }}
+  __job_status:
+    description: "Job status (automatically set - DO NOT SET MANUALLY)"
+    required: false
+    default: ${{ job.status }}
 
 outputs:
   deployment-id:
