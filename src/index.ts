@@ -57,7 +57,10 @@ async function run(): Promise<void> {
     const deploymentId = deployment.data.id
     core.info(`Created deployment ${deploymentId} for ${inputs.environment}`)
 
-    // Set initial status to in_progress
+    // Build the log URL for the current GitHub Actions run
+    const logUrl = `https://github.com/${owner}/${repo}/actions/runs/${github.context.runId}`
+
+    // Set initial status to in_progress with log URL
     await octokit.rest.repos.createDeploymentStatus({
       owner,
       repo,
@@ -65,6 +68,7 @@ async function run(): Promise<void> {
       state: "in_progress",
       environment: inputs.environment,
       description: "Deployment in progress",
+      log_url: logUrl,
     })
 
     // Set outputs
@@ -75,6 +79,7 @@ async function run(): Promise<void> {
     core.saveState("token", inputs.token)
     core.saveState("environment", inputs.environment)
     core.saveState("environment-url", inputs.environmentUrl)
+    core.saveState("log-url", logUrl)
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error occurred"

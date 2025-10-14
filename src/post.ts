@@ -6,6 +6,7 @@ interface SavedState {
   token: string
   environment: string
   environmentUrl: string
+  logUrl: string
 }
 
 type JobStatus = "success" | "failure" | "cancelled"
@@ -15,6 +16,7 @@ function getSavedState(): SavedState | null {
   const token = core.getState("token")
   const environment = core.getState("environment")
   const environmentUrl = core.getState("environment-url")
+  const logUrl = core.getState("log-url")
 
   if (!deploymentId || !token) {
     return null
@@ -25,6 +27,7 @@ function getSavedState(): SavedState | null {
     token,
     environment,
     environmentUrl,
+    logUrl: logUrl || `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/actions/runs/${github.context.runId}`,
   }
 }
 
@@ -104,6 +107,7 @@ async function run(): Promise<void> {
       state,
       environment: savedState.environment,
       description,
+      log_url: savedState.logUrl,
     }
 
     // Add environment URL if provided and deployment succeeded
