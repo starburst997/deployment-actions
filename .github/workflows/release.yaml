@@ -22,25 +22,10 @@ jobs:
         with:
           update-major-minor: true
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Build and Push Docker
+        uses: starburst997/docker-helm-push@v1
         with:
-          node-version: "20"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build TypeScript and bundle
-        run: npm run all
-
-      - name: Package for release
-        run: |
-          mkdir -p release
-          zip -r release/release.zip action.yml dist/ dist-post/
+          version: ${{ steps.version.outputs.version }}
 
       - name: Generate changelog and create release
         uses: starburst997/commits-logs@v1
-        with:
-          artifacts: |
-            release/*.zip

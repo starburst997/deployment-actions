@@ -25,78 +25,12 @@ inputs:
 outputs:
   deployment-id:
     description: "The ID of the created deployment"
-    value: ${{ steps.main-action.outputs.deployment-id }}
 
 runs:
-  using: "composite"
-  steps:
-    - name: Download release assets
-      shell: bash
-      run: |
-        # Smart version resolution using gh CLI
-        REF="${{ github.action_ref }}"
-
-        # If it's a major version like "v1", find the latest v1.x.x
-        if [[ "$REF" =~ ^v[0-9]+$ ]]; then
-          echo "Resolving major version $REF to latest patch version..."
-
-          RESOLVED_TAG=$(gh release list --repo starburst997/deployment-actions --json tagName --jq ".[].tagName" | \
-            grep "^$REF\." | \
-            sort -V | \
-            tail -n1)
-
-          if [ -z "$RESOLVED_TAG" ]; then
-            echo "No releases found for major version $REF, using latest"
-            RESOLVED_TAG="latest"
-          else
-            echo "Resolved $REF to $RESOLVED_TAG"
-          fi
-        else
-          RESOLVED_TAG="$REF"
-        fi
-
-        # Download the release using gh CLI
-        mkdir -p "${{ runner.temp }}/release"
-        cd "${{ runner.temp }}/release"
-
-        if [ "$RESOLVED_TAG" = "latest" ]; then
-          echo "Downloading latest release..."
-          gh release download --repo starburst997/deployment-actions --pattern "release.zip"
-        else
-          echo "Downloading release $RESOLVED_TAG..."
-          gh release download "$RESOLVED_TAG" --repo starburst997/deployment-actions --pattern "release.zip"
-        fi
-
-        # Extract the downloaded archive
-        unzip -q release.zip
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: "20"
-
-    - name: Run main action
-      id: main-action
-      shell: bash
-      run: |
-        cd "${{ runner.temp }}/release"
-        node dist/index.js
-      env:
-        INPUT_TOKEN: ${{ inputs.token }}
-        INPUT_REF: ${{ inputs.ref }}
-        INPUT_ENVIRONMENT: ${{ inputs.environment }}
-        INPUT_ENVIRONMENT_URL: ${{ inputs.environment-url }}
-        GITHUB_TOKEN: ${{ inputs.token }}
-
-    - name: Run post action
-      if: always()
-      shell: bash
-      run: |
-        cd "${{ runner.temp }}/release"
-        node dist-post/index.js
-      env:
-        INPUT_TOKEN: ${{ inputs.token }}
-        GITHUB_TOKEN: ${{ inputs.token }}
-        GITHUB_JOB_STATUS: ${{ job.status }}
+  using: "docker"
+  image: "docker://ghcr.io/${{ github.repository }}:latest"
+  post-entrypoint: "/post-entrypoint.sh"
+  post-if: "always()"
+  env:
+    GITHUB_TOKEN: ${{ github.token }}
+    GITHUB_HEAD_REF: ${{ github.head_ref }}
