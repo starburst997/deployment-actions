@@ -30,46 +30,19 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Setup runtime
+    - name: Download release assets
+      uses: robinraju/release-downloader@v1
+      with:
+        repository: "starburst997/deployment-actions"
+        tag: ${{ github.action_ref }}
+        fileName: "deployment-actions.zip"
+        out-file-path: "${{ runner.temp }}/deployment-actions"
+        extract: true
+        token: ${{ github.token }}
+
+    - name: Setup environment
       shell: bash
       run: |
-        # Extract version from action path
-        ACTION_PATH="${{ github.action_path }}"
-        ACTION_REF="${{ github.action_ref }}"
-
-        # Determine the version tag being used
-        if [[ "${{ github.action_repository }}" == "starburst997/deployment-actions" ]]; then
-          # External usage - get the ref that was used
-          VERSION="${ACTION_REF}"
-        else
-          # Local testing - use latest
-          VERSION="latest"
-        fi
-
-        echo "ACTION_VERSION=$VERSION" >> $GITHUB_ENV
-        echo "Using deployment-actions version: $VERSION"
-
-        # Create working directory
-        mkdir -p ${{ runner.temp }}/deployment-actions
-        cd ${{ runner.temp }}/deployment-actions
-
-        # Download the specific version's release
-        if [ "$VERSION" = "latest" ]; then
-          RELEASE_URL=$(curl -s https://api.github.com/repos/starburst997/deployment-actions/releases/latest | grep "browser_download_url.*deployment-actions.zip" | cut -d '"' -f 4)
-        else
-          RELEASE_URL=$(curl -s https://api.github.com/repos/starburst997/deployment-actions/releases/tags/${VERSION} | grep "browser_download_url.*deployment-actions.zip" | cut -d '"' -f 4)
-        fi
-
-        if [ -z "$RELEASE_URL" ]; then
-          echo "Error: Could not find release asset for version $VERSION"
-          exit 1
-        fi
-
-        echo "Downloading from: $RELEASE_URL"
-        curl -L -o deployment-actions.zip "$RELEASE_URL"
-        unzip -q deployment-actions.zip
-
-        # Save path for post action
         echo "DEPLOYMENT_ACTION_PATH=${{ runner.temp }}/deployment-actions" >> $GITHUB_ENV
 
     - name: Setup Node.js
