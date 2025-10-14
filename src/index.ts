@@ -10,7 +10,11 @@ interface ActionInputs {
 
 async function getInputs(): Promise<ActionInputs> {
   const token = core.getInput("token") || process.env.GITHUB_TOKEN || ""
-  const ref = core.getInput("ref") || process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF || ""
+  const ref =
+    core.getInput("ref") ||
+    process.env.GITHUB_HEAD_REF ||
+    process.env.GITHUB_REF ||
+    ""
   const environment = core.getInput("environment") || "production"
   const environmentUrl = core.getInput("environment-url") || ""
 
