@@ -5,11 +5,17 @@ on:
     branches:
       - main
 
+env:
+  # This prefix is used for auto-version commit messages and excluding from changelogs
+  COMMIT: "chore: update docker image to"
+
 jobs:
   release-production:
     name: Build and Release Production
     runs-on: ubuntu-latest
     permissions: write-all
+    if: |
+      !contains(github.event.head_commit.message, 'chore: update docker image to')
     steps:
       - name: Initialize custom bot
         id: bot
@@ -30,7 +36,7 @@ jobs:
         with:
           update-major-minor: true
           edit-file: "action.yml"
-          edit-commit-message: "chore: update docker image to {version}"
+          edit-commit-message: "${{ env.COMMIT }} {version}"
           git-push: false
           git-config: false
 
@@ -42,6 +48,6 @@ jobs:
       - name: Generate changelog and create release
         uses: starburst997/commits-logs@v1
         with:
-          exclude-commits: "chore: update docker image to"
+          exclude-commits: "${{ env.COMMIT }}"
           git-push: true
           token: ${{ steps.bot.outputs.token }}
