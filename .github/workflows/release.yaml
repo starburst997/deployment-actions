@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  # This prefix is used for auto-version commit messages and excluding from changelogs
+  # Prefix used for auto-version commit messages and excluding from changelogs
   COMMIT: "chore: update docker image to"
 
 jobs:
