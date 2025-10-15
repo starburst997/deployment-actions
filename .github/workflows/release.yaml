@@ -34,6 +34,7 @@ jobs:
         id: version
         uses: starburst997/auto-version@v1
         with:
+          token: ${{ steps.bot.outputs.token }}
           update-major-minor: true
           edit-file: "action.yml"
           edit-commit-message: "${{ env.COMMIT }} {version}"
