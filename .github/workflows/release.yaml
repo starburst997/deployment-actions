@@ -11,10 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
+      - name: Initialize custom bot
+        id: bot
+        uses: starburst997/custom-bot-init@v1
+        with:
+          app-id: ${{ secrets.BOT_ID }}
+          private-key: ${{ secrets.BOT_KEY }}
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ steps.bot.outputs.token }}
 
       - name: Determine Version
         id: version
@@ -24,6 +32,7 @@ jobs:
           edit-file: "action.yml"
           edit-commit-message: "chore: update docker image to {version}"
           git-push: false
+          git-config: false
 
       - name: Build and Push Docker
         uses: starburst997/docker-helm-push@v1
@@ -35,3 +44,4 @@ jobs:
         with:
           exclude-commits: "chore: update docker image to"
           git-push: true
+          token: ${{ steps.bot.outputs.token }}
