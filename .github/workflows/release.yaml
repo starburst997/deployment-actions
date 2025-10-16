@@ -45,6 +45,7 @@ jobs:
         uses: starburst997/docker-helm-push@v1
         with:
           version: ${{ steps.version.outputs.tag }}
+          token: ${{ steps.bot.outputs.token }}
 
       - name: Generate changelog and create release
         uses: starburst997/commits-logs@v1
