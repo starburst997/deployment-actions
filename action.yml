@@ -36,7 +36,7 @@ outputs:
 
 runs:
   using: "docker"
-  image: "docker://ghcr.io/starburst997/deployment-actions:v1.0.41" # Cannot specify dynamic version, this is really stupid
+  image: "docker://ghcr.io/starburst997/deployment-actions:v1.0.42" # Cannot specify dynamic version, this is really stupid
   post-entrypoint: "/post-entrypoint.sh"
   post-if: "always()"
   env:
