@@ -52,4 +52,3 @@ jobs:
         with:
           exclude-commits: "${{ env.COMMIT }}"
           git-push: true
-          token: ${{ steps.bot.outputs.token }}
