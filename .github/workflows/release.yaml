@@ -27,8 +27,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           token: ${{ steps.bot.outputs.token }}
+          fetch-depth: 0
 
       - name: Determine Version
         id: version
@@ -38,17 +38,17 @@ jobs:
           update-major-minor: true
           edit-file: "action.yml"
           edit-commit-message: "${{ env.COMMIT }} {version}"
-          git-push: false
           git-config: false
+          git-push: false
 
       - name: Build and Push Docker
         uses: starburst997/docker-helm-push@v1
         with:
           version: ${{ steps.version.outputs.tag }}
-          token: ${{ steps.bot.outputs.token }}
 
       - name: Generate changelog and create release
         uses: starburst997/commits-logs@v1
         with:
+          token: ${{ steps.bot.outputs.token }}
           exclude-commits: "${{ env.COMMIT }}"
           git-push: true
