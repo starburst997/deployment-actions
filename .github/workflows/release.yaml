@@ -38,7 +38,6 @@ jobs:
           update-major-minor: true
           edit-file: "action.yml"
           edit-commit-message: "${{ env.COMMIT }} {version}"
-          git-config: false
           git-push: false
 
       - name: Build and Push Docker
