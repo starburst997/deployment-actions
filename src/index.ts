@@ -73,6 +73,8 @@ async function run(): Promise<void> {
 
     // Set outputs
     core.setOutput("deployment-id", deploymentId.toString())
+    core.setOutput("environment", inputs.environment)
+    core.setOutput("url", inputs.environmentUrl)
 
     // Save state for post action
     core.saveState("deployment-id", deploymentId.toString())

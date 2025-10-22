@@ -33,6 +33,10 @@ inputs:
 outputs:
   deployment-id:
     description: "The ID of the created deployment"
+  environment:
+    description: "The deployment environment name"
+  url:
+    description: "The URL where the deployment is accessible"
 
 runs:
   using: "docker"
