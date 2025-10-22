@@ -357,6 +357,7 @@
           Basic Usage
         </h3>
         <div class="code-block">- <span class="key">name</span>: <span class="value">Manage Deployment</span>
+  <span class="key">id</span>: <span class="value">deployment</span>
   <span class="key">uses</span>: <span class="value">starburst997/deployment-actions@v1</span>
   <span class="keyword">with</span>:
     <span class="key">environment</span>: <span class="value">production</span>
@@ -379,6 +380,7 @@
       - <span class="key">uses</span>: <span class="value">actions/checkout@v4</span>
 
       - <span class="key">name</span>: <span class="value">Manage Deployment</span>
+        <span class="key">id</span>: <span class="value">deployment</span>
         <span class="key">uses</span>: <span class="value">starburst997/deployment-actions@v1</span>
         <span class="keyword">with</span>:
           <span class="key">environment</span>: <span class="value">production</span>
@@ -388,7 +390,13 @@
         <span class="key">run</span>: |
           <span class="comment"># Your deployment steps here</span>
           <span class="value">npm run build</span>
-          <span class="value">npm run deploy</span></div>
+          <span class="value">npm run deploy</span>
+
+      - <span class="key">name</span>: <span class="value">Use Deployment Outputs</span>
+        <span class="key">run</span>: |
+          <span class="value">echo "Deployment ID: ${{ steps.deployment.outputs.deployment-id }}"</span>
+          <span class="value">echo "Environment: ${{ steps.deployment.outputs.environment }}"</span>
+          <span class="value">echo "URL: ${{ steps.deployment.outputs.url }}"</span></div>
       </div>
     </section>
 
@@ -451,6 +459,14 @@
             <tr>
               <td><code>deployment-id</code></td>
               <td>The ID of the created deployment</td>
+            </tr>
+            <tr>
+              <td><code>environment</code></td>
+              <td>The deployment environment name</td>
+            </tr>
+            <tr>
+              <td><code>url</code></td>
+              <td>The URL where the deployment is accessible</td>
             </tr>
           </tbody>
         </table>

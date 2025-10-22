@@ -20,9 +20,11 @@ A GitHub composite action that streamlines deployment management by automaticall
 
 ## Outputs
 
-| Output          | Description                      |
-| --------------- | -------------------------------- |
-| `deployment-id` | The ID of the created deployment |
+| Output          | Description                             |
+| --------------- | --------------------------------------- |
+| `deployment-id` | The ID of the created deployment        |
+| `environment`   | The deployment environment name         |
+| `url`           | The URL where the deployment is accessible |
 
 ## How It Works
 
@@ -49,6 +51,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Manage Deployment
+        id: deployment
         uses: starburst997/deployment-actions@v1
         with:
           environment: production
@@ -59,6 +62,12 @@ jobs:
           # Your deployment steps here
           npm run build
           npm run deploy
+
+      - name: Use Deployment Outputs
+        run: |
+          echo "Deployment ID: ${{ steps.deployment.outputs.deployment-id }}"
+          echo "Environment: ${{ steps.deployment.outputs.environment }}"
+          echo "URL: ${{ steps.deployment.outputs.url }}"
 ```
 
 ## License
