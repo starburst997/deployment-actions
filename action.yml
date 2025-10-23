@@ -37,6 +37,8 @@ outputs:
     description: "The deployment environment name"
   url:
     description: "The URL where the deployment is accessible"
+  domain:
+    description: "The domain (with subdomains) extracted from the URL, without protocol"
 
 runs:
   using: "docker"

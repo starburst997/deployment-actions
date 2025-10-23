@@ -396,7 +396,8 @@
         <span class="key">run</span>: |
           <span class="value">echo "Deployment ID: ${{ steps.deployment.outputs.deployment-id }}"</span>
           <span class="value">echo "Environment: ${{ steps.deployment.outputs.environment }}"</span>
-          <span class="value">echo "URL: ${{ steps.deployment.outputs.url }}"</span></div>
+          <span class="value">echo "URL: ${{ steps.deployment.outputs.url }}"</span>
+          <span class="value">echo "Domain: ${{ steps.deployment.outputs.domain }}"</span></div>
       </div>
     </section>
 
@@ -467,6 +468,10 @@
             <tr>
               <td><code>url</code></td>
               <td>The URL where the deployment is accessible</td>
+            </tr>
+            <tr>
+              <td><code>domain</code></td>
+              <td>The domain (with subdomains) extracted from the URL, without protocol</td>
             </tr>
           </tbody>
         </table>

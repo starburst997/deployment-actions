@@ -71,10 +71,22 @@ async function run(): Promise<void> {
       log_url: logUrl,
     })
 
+    // Extract domain from URL (without protocol)
+    let domain = ""
+    if (inputs.environmentUrl) {
+      try {
+        const url = new URL(inputs.environmentUrl)
+        domain = url.host // This includes subdomain.domain.com
+      } catch (error) {
+        core.warning(`Failed to parse domain from URL: ${inputs.environmentUrl}`)
+      }
+    }
+
     // Set outputs
     core.setOutput("deployment-id", deploymentId.toString())
     core.setOutput("environment", inputs.environment)
     core.setOutput("url", inputs.environmentUrl)
+    core.setOutput("domain", domain)
 
     // Save state for post action
     core.saveState("deployment-id", deploymentId.toString())

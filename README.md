@@ -20,11 +20,12 @@ A GitHub composite action that streamlines deployment management by automaticall
 
 ## Outputs
 
-| Output          | Description                             |
-| --------------- | --------------------------------------- |
-| `deployment-id` | The ID of the created deployment        |
-| `environment`   | The deployment environment name         |
-| `url`           | The URL where the deployment is accessible |
+| Output          | Description                                                           |
+| --------------- | --------------------------------------------------------------------- |
+| `deployment-id` | The ID of the created deployment                                      |
+| `environment`   | The deployment environment name                                       |
+| `url`           | The URL where the deployment is accessible                            |
+| `domain`        | The domain (with subdomains) extracted from the URL, without protocol |
 
 ## How It Works
 
@@ -68,6 +69,7 @@ jobs:
           echo "Deployment ID: ${{ steps.deployment.outputs.deployment-id }}"
           echo "Environment: ${{ steps.deployment.outputs.environment }}"
           echo "URL: ${{ steps.deployment.outputs.url }}"
+          echo "Domain: ${{ steps.deployment.outputs.domain }}"
 ```
 
 ## License
